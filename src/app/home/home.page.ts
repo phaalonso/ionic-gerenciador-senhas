@@ -35,6 +35,30 @@ export class HomePage {
     await alert.present();
   }
 
+  async mensagemAdicionar() {
+    const alert = await this.alertController.create({
+      header: 'Confirme os dados',
+      message: `Nome: ${this.conta.nome}<br/>Login: ${this.conta.login}<br/>Senha: ${this.conta.senha}`,
+      buttons: [
+        "Cancelar",
+        {
+          text: "Cadastrar",
+          role: "cadastrar",
+          handler: () => {
+            this.conta.id = new Date().getTime();
+            this.list_contas.push(this.conta);
+
+            this.conta = {};
+
+            this.storage.armazenar("contas", this.list_contas);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   adicionar() {
     if (!this.conta.nome || !this.conta.login || !this.conta.senha) {
       this.mostrarAlerta("Erro", "Você precisa inserir todas as informações");
@@ -46,12 +70,7 @@ export class HomePage {
     const isEqualsNome = this.list_contas.find(conta => conta.nome == this.conta.nome);
 
     if (!isEqualsNome) {
-      this.conta.id = new Date().getTime();
-      this.list_contas.push(this.conta);
-
-      this.conta = {};
-
-      this.storage.armazenar("contas", this.list_contas);
+      this.mensagemAdicionar();
     } else {
       console.log("Nome igual");
       this.mostrarAlerta("Erro", "Já existe uma conta com esse nome");
