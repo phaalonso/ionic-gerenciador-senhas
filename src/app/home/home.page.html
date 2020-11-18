@@ -31,8 +31,9 @@
 
     <ion-button expand="block" (click)="adicionar()">Adicionar</ion-button>
 
-    <div *ngIf="list_contas.length > 0">
+    <div class="lista-contas" *ngIf="list_contas.length > 0">
       <strong>Lista de contas</strong>
+      <br/>
 
       <ion-list>
         <ion-item *ngFor="let item of list_contas">
