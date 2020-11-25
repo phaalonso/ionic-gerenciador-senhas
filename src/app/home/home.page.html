@@ -37,7 +37,7 @@
 
       <ion-list>
         <ion-item *ngFor="let item of list_contas">
-          <p>{{ item.nome }}</p>
+          <p (click)="verDetalhes(item.id)">{{ item.nome }}</p>
           <span (click)="excluir(item.id)">X</span>
         </ion-item>
       </ion-list>

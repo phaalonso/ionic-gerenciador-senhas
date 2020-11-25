@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
+import { DetailPage } from '../detail/detail.page';
 
 import { StorageService } from '../service/storage.service';
 
-interface Conta {
+export interface Conta {
   id: number;
   nome: string;
   login: string;
@@ -20,8 +21,21 @@ export class HomePage {
   public conta = {} as any;
   public list_contas: Conta[] = [];
 
-  constructor(private storage: StorageService, private alertController: AlertController) {
+  constructor(private storage: StorageService, private alertController: AlertController, public modalController: ModalController) {
     this.storage.recuperar("contas").then(c => { if (c) this.list_contas = c });
+  }
+
+  async verDetalhes(id: number) {
+    const conta = this.list_contas.find(item => item.id == id);
+
+    const modal = await this.modalController.create({
+      component: DetailPage,
+      componentProps: {
+        'conta': conta
+      }
+    })
+
+    return await modal.present();
   }
 
   async mostrarAlerta(header: string, mensagem: string) {

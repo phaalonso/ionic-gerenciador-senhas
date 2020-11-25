@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalhes da conta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+
+  <ion-text>
+    <h5 id="name">
+      <strong>Nome:</strong>
+      <span>{{conta.nome}}</span>
+    </h5>
+    <h5 id="login">
+      <strong>Login:</strong>
+      <span>{{conta.login}}</span>
+    </h5>
+    <h5 id="senha">
+      <strong>Senha:</strong>
+      <span>{{conta.senha}}</span>
+    </h5>
+  </ion-text>
+
+  <ion-button expand="block" (click)="fecharModal()">
+    Voltar
+  </ion-button>
+  </div>
+</ion-content>
