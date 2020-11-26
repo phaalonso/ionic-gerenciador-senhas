@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
-import { DetailPage } from '../detail/detail.page';
+import * as CryptoJs from 'crypto-js';
 
+import { DetailPage } from '../detail/detail.page';
 import { StorageService } from '../service/storage.service';
+import { key as chave } from 'src/environments/encryptKey';
 
 export interface Conta {
   id: number;
@@ -25,8 +27,19 @@ export class HomePage {
     this.storage.recuperar("contas").then(c => { if (c) this.list_contas = c });
   }
 
+  cryptografarConta(conta: Conta) {
+    conta.login = CryptoJs.AES.encrypt(conta.login, chave).toString();
+    conta.senha = CryptoJs.AES.encrypt(conta.senha, chave).toString();
+  }
+
+  descriptografarConta(conta: Conta) {
+    conta.login = CryptoJs.AES.decrypt(conta.login, chave).toString(CryptoJs.enc.Utf8);
+    conta.senha = CryptoJs.AES.decrypt(conta.senha, chave).toString(CryptoJs.enc.Utf8);
+  }
+
   async verDetalhes(id: number) {
     const conta = this.list_contas.find(item => item.id == id);
+    this.descriptografarConta(conta);
 
     const modal = await this.modalController.create({
       component: DetailPage,
@@ -60,6 +73,7 @@ export class HomePage {
           role: "cadastrar",
           handler: () => {
             this.conta.id = new Date().getTime();
+            this.cryptografarConta(this.conta);
             this.list_contas.push(this.conta);
 
             this.conta = {};
