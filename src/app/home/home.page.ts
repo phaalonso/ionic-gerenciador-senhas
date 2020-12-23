@@ -50,14 +50,17 @@ export class HomePage {
   }
 
   async verDetalhes(id: number) {
-    console.log('abrindo detalhes');
     const conta = this.list_contas.find(item => item.id == id);
-    this.crypt.decryptConta(conta);
+    console.log('Detalhes de', conta);
 
     const modal = await this.modalController.create({
       component: DetailPage,
       componentProps: {
-        'conta': conta
+        'conta': {
+          nome: conta.nome,
+          login: this.crypt.decryptAES(conta.login),
+          senha: this.crypt.decryptAES(conta.senha)
+        }
       }
     })
 
@@ -75,7 +78,7 @@ export class HomePage {
     await alert.present();
   }
 
-  async mensagemAdicionar(conta) {
+  async mensagemAdicionar(conta: Conta) {
     const alert = await this.alertController.create({
       header: 'Confirme os dados',
       message: `Nome: ${conta.nome}<br/>Login: ${conta.login}<br/>Senha: ${conta.senha}`,
@@ -85,8 +88,9 @@ export class HomePage {
           text: "Cadastrar",
           role: "cadastrar",
           handler: () => {
-            this.conta.id = new Date().getTime();
+            conta.id = new Date().getTime();
             this.crypt.encryptConta(conta);
+            console.log(this.conta);
             this.list_contas.push(conta);
 
             this.conta = {};
@@ -106,12 +110,8 @@ export class HomePage {
       return;
     }
 
-    const { nome, login, senha } = this.formCadastro.value;
-
     // Não se pode utilizar diretamente o objeto this.formCadastro.value devido a problemas com lixo de memória
     const conta = this.formCadastro.value;
-
-    console.log(conta);
 
     const isEqualsNome = this.list_contas.find(conta => conta.nome == this.formCadastro.value.nome);
 
@@ -154,23 +154,40 @@ export class HomePage {
   async editar(id: number) {
     const conta = this.list_contas.find(item => item.id == id);
 
+    const dados = {
+      nome: conta.nome,
+      login: this.crypt.decryptAES(conta.login),
+      senha: this.crypt.decryptAES(conta.senha)
+    }
+
     const modal = await this.modalController.create({
       component: UpdatePage,
       componentProps: {
-        conta
+        dados,
+        listaContas: this.list_contas
       }
     });
 
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
-    console.log(data);
-    console.log(conta);
+
+    if (data) {
+      console.log('Antigo', conta);
+      console.log('Atualizar', data);
+
+      conta.nome = data.nome;
+      conta.login = this.crypt.encryptAES(data.login);
+      conta.senha = this.crypt.encryptAES(data.senha);
+      console.log('Novo', conta);
+
+      this.storage.armazenar('contas', this.list_contas);
+    }
   }
 
 
-deslogar() {
-  this.autenticacaoService.deslogar();
-}
+  deslogar() {
+    this.autenticacaoService.deslogar();
+  }
 
 }
