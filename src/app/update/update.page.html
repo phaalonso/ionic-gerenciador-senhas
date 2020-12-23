@@ -1,9 +1,63 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>update</ion-title>
+    <ion-title>Atualizar conta</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <div class="container">
+    <form [formGroup]="formCadastro" (ngSubmit)="atualizar()">
+      <ion-item>
+        <ion-label position="floating">Nome</ion-label>
+        <ion-input type="text" formControlName="nome"></ion-input>
+      </ion-item>
+      <div
+        class="errors"
+        *ngIf="(formCadastro.get('nome').dirty || formCadastro.get('nome').touched) && formCadastro.controls.nome.invalid"
+      >
+        <span *ngIf="formCadastro.controls.nome.errors?.required">
+          Nome é obrigatório
+        </span>
+        <span *ngIf="formCadastro.controls.nome.errors?.minlength">
+          Nome precisa possuir mais do que 5 caracteres
+        </span>
+      </div>
 
+      <ion-item>
+        <ion-label position="floating">Login</ion-label>
+        <ion-input type="text" formControlName="login"></ion-input>
+      </ion-item>
+      <div
+        class="errors"
+        *ngIf="(formCadastro.get('login').dirty || formCadastro.get('login').touched) && formCadastro.controls.login.invalid"
+      >
+        <span *ngIf="formCadastro.controls.login.errors?.required">
+          Login é obrigatório
+        </span>
+        <span *ngIf="formCadastro.controls.login.errors?.minlength">
+          Login precisa possuir mais do que 5 caracteres
+        </span>
+      </div>
+
+      <ion-item>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input type="password" formControlName="senha"></ion-input>
+      </ion-item>
+      <div
+        class="errors"
+        *ngIf="(formCadastro.get('senha').dirty || formCadastro.get('senha').touched) && formCadastro.controls.senha.invalid"
+      >
+        <span *ngIf="formCadastro.controls.senha.errors?.required">
+          Senha é obrigatório
+        </span>
+        <span *ngIf="formCadastro.controls.senha.errors?.minlength">
+          Senha precisa possuir mais do que 5 caracteres
+        </span>
+      </div>
+
+      <ion-button expand="block" type="submit" [disabled]="formCadastro.invalid"
+        >Atualizar</ion-button
+      >
+    </form>
+  </div>
 </ion-content>
