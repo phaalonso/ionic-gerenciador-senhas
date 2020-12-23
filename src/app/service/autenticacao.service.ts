@@ -19,34 +19,49 @@ export class AutenticacaoService {
     private storageService: StorageService,
     private router: Router
   ) {
-    if (this.logado) {
-      this.router.navigate(['/home']);
+    if (!this.cadastrado) {
+      this.storageService.recuperar('login').then((usuario: Usuario) => {
+        this.cadastrado = usuario;
+      });
     }
   }
 
-  logar(usuario: Usuario) {
-    if (usuario.nome == usuario.senha) {
-      this.logado = true;
-      this.router.navigate(['/home']);
-    } else {
-      this.logado = false;
+  async logar(usuario: Usuario) {
+    if (!this.cadastrado) {
+      this.cadastrado = await this.storageService.recuperar('login');
     }
 
+    this.logado = (usuario.nome == this.cadastrado.nome) && (usuario.senha == this.cadastrado.senha);
+
+    return this.logado;
   }
 
   deslogar() {
     this.logado = false;
-    this.router.navigate(['/login']);
   }
 
   isLogado() {
     return this.logado;
   }
 
-  async cadastrarUsuario(usuario: Usuario) {
-    this.storageService.armazenar('login', usuario).then(() => {
-      this.logado = true;
-      this.router.navigate(['/home']);
+  isCadastrado() {
+    return new Promise(resolve => {
+      if (this.cadastrado)
+        resolve(true);
+      this.storageService.recuperar('login').then(usuario => {
+        if (usuario) {
+          console.log(usuario);
+          this.cadastrado = usuario;
+          resolve(true);
+        }
+        resolve(false);
+      });
     });
+  }
+
+  async cadastrarUsuario(usuario: Usuario) {
+    await this.storageService.armazenar('login', usuario);
+    this.logado = true;
+    return this.logado;
   }
 }
