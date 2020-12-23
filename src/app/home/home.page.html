@@ -43,7 +43,7 @@
         Senha is required.
       </span>
 
-      <ion-button expand="block" type="submit">Adicionar</ion-button>
+      <ion-button expand="block" type="submit" disabled="formCadastro.valid">Adicionar</ion-button>
     </form>
 
     <div class="lista-contas" *ngIf="list_contas.length > 0">
@@ -59,7 +59,7 @@
     </div>
 
     <ion-fab vertical="bottom" horizontal="start" slot="fixed">
-      <ion-fab-button (click)="deslogar()">
+      <ion-fab-button (click)="deslogar()" [routerLink]="['/login']">
         <ion-icon name="log-out-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>

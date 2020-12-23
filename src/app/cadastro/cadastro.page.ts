@@ -35,7 +35,11 @@ export class CadastroPage implements OnInit {
     const { nome, senha } = this.formulario.value;
     const usuario: Usuario = { nome, senha }
 
-    this.autenticacaoService.cadastrarUsuario(usuario);
+    this.autenticacaoService.cadastrarUsuario(usuario).then(isCadastrado => {
+      if (isCadastrado) {
+        this.router.navigate(['/home']);
+      }
+    });
   }
 
 }
