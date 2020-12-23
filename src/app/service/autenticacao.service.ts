@@ -42,4 +42,11 @@ export class AutenticacaoService {
   isLogado() {
     return this.logado;
   }
+
+  async cadastrarUsuario(usuario: Usuario) {
+    this.storageService.armazenar('login', usuario).then(() => {
+      this.logado = true;
+      this.router.navigate(['/home']);
+    });
+  }
 }
