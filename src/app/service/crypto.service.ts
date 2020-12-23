@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { AES } from 'crypto-js';
+import { AES, enc } from 'crypto-js';
 
 import { key } from 'src/environments/encryptKey';
 
@@ -25,6 +25,6 @@ export class CryptoService {
   }
 
   decryptAES(content) {
-    return AES.decrypt(content, this.chave).toString(CryptoJS.enc.Utf8);
+    return AES.decrypt(content, this.chave).toString(enc.Utf8);
   }
 }

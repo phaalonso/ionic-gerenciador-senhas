@@ -59,6 +59,7 @@ export class HomePage {
   }
 
   async verDetalhes(id: number) {
+    console.log('abrindo detalhes');
     const conta = this.list_contas.find(item => item.id == id);
     this.descriptografarConta(conta);
 
@@ -100,6 +101,7 @@ export class HomePage {
             this.conta = {};
 
             this.storage.armazenar("contas", this.list_contas);
+            this.formCadastro.reset();
           }
         }
       ]
@@ -113,13 +115,17 @@ export class HomePage {
       return;
     }
 
-    const conta = this.formCadastro.value;
+    const { nome, login, senha } = this.formCadastro.value;
+
+    // Não se pode utilizar diretamente o objeto this.formCadastro.value devido a problemas com lixo de memória
+    const conta = this.formCadastro.value; 
+
     console.log(conta);
 
     const isEqualsNome = this.list_contas.find(conta => conta.nome == this.formCadastro.value.nome);
 
     if (!isEqualsNome) {
-      this.mensagemAdicionar(this.formCadastro.value);
+      this.mensagemAdicionar(conta);
     } else {
       console.log("Nome igual");
       this.mostrarAlerta("Erro", "Já existe uma conta com esse nome");
