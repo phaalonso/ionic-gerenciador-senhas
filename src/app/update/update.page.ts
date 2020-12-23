@@ -1,8 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Conta } from '../home/home.page';
 import { CryptoService } from '../service/crypto.service';
+
+export interface ContaPartition {
+  nome: string;
+  login: string;
+  senha: string;
+}
 
 @Component({
   selector: 'app-update',
@@ -12,22 +18,23 @@ import { CryptoService } from '../service/crypto.service';
 export class UpdatePage {
 
 
-  @Input() conta: Conta;
+  @Input() dados: ContaPartition;
+  @Input() listaContas: Conta[];
+
   public formCadastro: FormGroup;
 
   constructor(
     private modalController: ModalController,
+    private alertController: AlertController,
     private formBuilder: FormBuilder,
-    private crypt: CryptoService
   ) {
   }
 
   ngOnInit() {
-    this.crypt.decryptConta(this.conta);
     this.formCadastro = this.formBuilder.group({
-      nome: [this.conta.nome, [Validators.required, Validators.minLength(5)]],
-      login: [this.conta.login, [Validators.required, Validators.minLength(5)]],
-      senha: [this.conta.senha, [Validators.required, Validators.minLength(5)]],
+      nome: [this.dados.nome, [Validators.required, Validators.minLength(5)]],
+      login: [this.dados.login, [Validators.required, Validators.minLength(5)]],
+      senha: [this.dados.senha, [Validators.required, Validators.minLength(5)]],
     });
   }
 
@@ -37,11 +44,28 @@ export class UpdatePage {
     }
 
     const conta = {
-      nome: this.formCadastro.get('nome'),
-      login: this.formCadastro.get('login'),
-      senha: this.formCadastro.get('senha')
+      nome: this.formCadastro.get('nome').value,
+      login: this.formCadastro.get('login').value,
+      senha: this.formCadastro.get('senha').value
     }
 
+    console.log(this.dados);
+
+    if (this.dados.nome != conta.nome) {
+      if (!!this.listaContas.find(ac => ac.nome == conta.nome)) {
+        this.alertController.create({
+          header: 'Error',
+          message: 'Já existe uma conta com esse nome',
+          buttons: ['Oks']
+        }).then(alert => {
+          alert.present();
+        });
+
+        return;
+      }
+    }
+
+    this.formCadastro.reset();
     this.modalController.dismiss(conta);
   }
 
