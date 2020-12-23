@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AutenticacaoService } from '../service/autenticacao.service';
 import { Router } from '@angular/router';
 import { CryptoService } from '../service/crypto.service';
+import { UpdatePage } from '../update/update.page';
 
 export interface Conta {
   id: number;
@@ -158,6 +159,17 @@ export class HomePage {
     })
 
     await alert.present();
+  }
+
+  async editar(id: number) {
+    const conta = this.list_contas.find(item => item.id == id);
+
+    this.modalController.create({
+      component: UpdatePage,
+      componentProps: {
+        conta
+      }
+    }).then(modal => modal.present());
   }
 
   deslogar() {
