@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { CryptoService } from './crypto.service';
 import { StorageService } from './storage.service';
 
 export interface Usuario {
@@ -17,7 +18,8 @@ export class AutenticacaoService {
 
   constructor(
     private storageService: StorageService,
-    private router: Router
+    private router: Router,
+    private crypt: CryptoService
   ) {
     if (!this.cadastrado) {
       this.storageService.recuperar('login').then((usuario: Usuario) => {
@@ -26,10 +28,22 @@ export class AutenticacaoService {
     }
   }
 
+  private criptografarUsuario(user: Usuario) {
+    user.nome = this.crypt.encryptAES(user.nome);
+    user.senha = this.crypt.encryptAES(user.senha);
+  }
+
+  private decryptografarUsuario(user: Usuario) {
+    user.nome = this.crypt.decryptAES(user.nome);
+    user.senha = this.crypt.decryptAES(user.senha);
+  }
+
   async logar(usuario: Usuario) {
     if (!this.cadastrado) {
       this.cadastrado = await this.storageService.recuperar('login');
     }
+
+    this.decryptografarUsuario(this.cadastrado);
 
     this.logado = (usuario.nome == this.cadastrado.nome) && (usuario.senha == this.cadastrado.senha);
 
@@ -60,6 +74,7 @@ export class AutenticacaoService {
   }
 
   async cadastrarUsuario(usuario: Usuario) {
+    this.criptografarUsuario(usuario);
     await this.storageService.armazenar('login', usuario);
     this.logado = true;
     return this.logado;
