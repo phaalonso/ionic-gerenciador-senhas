@@ -11,24 +11,39 @@
         <ion-label position="floating">Usuario</ion-label>
         <ion-input formControlName="nome"></ion-input>
       </ion-item>
-      <span
-        *ngIf="(formulario.get('nome').dirty || formulario.get('nome').touched) && formulario.controls.nome.errors?.required"
+      <div
+        class="errors"
+        *ngIf="(formulario.get('nome').dirty || formulario.get('nome').touched)"
       >
-      Insira o nome
-      </span>
+        <span *ngIf="formulario.controls.nome.errors?.required">
+          Insira o nome
+        </span>
+
+        <span *ngIf="formulario.controls.nome.errors?.minlength">
+          Nome precisa ser maior do que 5 caracteres
+        </span>
+      </div>
 
       <ion-item>
         <ion-label position="floating">Senha</ion-label>
         <ion-input type="password" formControlName="senha"></ion-input>
       </ion-item>
-      <span
-        *ngIf="(formulario.get('senha').dirty || formulario.get('senha').touched) && formulario.controls.senha.errors?.required"
+      <div
+        class="errors"
+        *ngIf="(formulario.get('senha').dirty || formulario.get('senha').touched)"
       >
-      Insira a senha
-      </span>
+        <span *ngIf="formulario.controls.senha.errors?.required">
+          Insira a senha
+        </span>
+        <span *ngIf="formulario.controls.senha.errors?.minlength">
+          Senha precisa ser maior do que 5 caracteres
+        </span>
+      </div>
 
       <ion-button expand="block" fill="solid" type="submit">Logar</ion-button>
     </form>
-    <ion-button expand="block" fill="outline" [routerLink]="['/cadastro']" >Cadastrar-se</ion-button>
+    <ion-button expand="block" fill="outline" [routerLink]="['/cadastro']"
+      >Cadastrar-se</ion-button
+    >
   </div>
 </ion-content>
