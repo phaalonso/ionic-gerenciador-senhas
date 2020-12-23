@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title style="text-align: center;">
-      Gerenciador de senhas
-    </ion-title>
+    <ion-title style="text-align: center"> Gerenciador de senhas </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,35 +11,57 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <ion-item>
-      <ion-label position="floating">Nome</ion-label>
-      <ion-input [(ngModel)]="conta.nome" ></ion-input>
-    </ion-item>
+  <div class="container">
+    <form [formGroup]="formCadastro" (ngSubmit)="adicionar()">
+      <ion-item>
+        <ion-label position="floating">Nome</ion-label>
+        <ion-input type="text" formControlName="nome"></ion-input>
+      </ion-item>
+      <span
+        *ngIf="(formCadastro.get('nome').dirty || formCadastro.get('nome').touched) && formCadastro.controls.nome.errors?.required"
+      >
+        Name is required.
+      </span>
 
-    <ion-item>
-      <ion-label position="floating">Login</ion-label>
-      <ion-input [(ngModel)]="conta.login" ></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Login</ion-label>
+        <ion-input type="text" formControlName="login"></ion-input>
+      </ion-item>
+      <span
+        *ngIf="(formCadastro.get('login').dirty || formCadastro.get('login').touched) && formCadastro.controls.login.errors?.required"
+      >
+        Login is required.
+      </span>
 
-    <ion-item>
-      <ion-label position="floating">Senha</ion-label>
-      <ion-input type="password" [(ngModel)]="conta.senha" ></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input type="password" formControlName="senha"></ion-input>
+      </ion-item>
+      <span
+        *ngIf="(formCadastro.get('senha').dirty || formCadastro.get('senha').touched) && formCadastro.controls.senha.errors?.required"
+      >
+        Senha is required.
+      </span>
 
-    <ion-button expand="block" (click)="adicionar()">Adicionar</ion-button>
+      <ion-button expand="block" type="submit">Adicionar</ion-button>
+    </form>
 
     <div class="lista-contas" *ngIf="list_contas.length > 0">
       <strong>Lista de contas</strong>
-      <br/>
+      <br />
 
       <ion-list>
         <ion-item *ngFor="let item of list_contas">
           <p (click)="verDetalhes(item.id)">{{ item.nome }}</p>
-          <span (click)="excluir(item.id)">X</span>
+          <ion-icon name="close-outline" (click)="excluir(item.id)"></ion-icon>
         </ion-item>
       </ion-list>
-
     </div>
+
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+      <ion-fab-button (click)="deslogar()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </div>
 </ion-content>

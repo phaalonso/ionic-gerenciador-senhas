@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
-import * as CryptoJs from 'crypto-js';
 
 import { DetailPage } from '../detail/detail.page';
 import { StorageService } from '../service/storage.service';
-import { key as chave } from 'src/environments/encryptKey';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AutenticacaoService } from '../service/autenticacao.service';
+import { Router } from '@angular/router';
+import { CryptoService } from '../service/crypto.service';
 
 export interface Conta {
   id: number;
@@ -20,21 +22,40 @@ export interface Conta {
 })
 export class HomePage {
 
+  public formCadastro: FormGroup;
   public conta = {} as any;
   public list_contas: Conta[] = [];
 
-  constructor(private storage: StorageService, private alertController: AlertController, public modalController: ModalController) {
+  constructor(
+    private storage: StorageService,
+    private alertController: AlertController,
+    private modalController: ModalController,
+    private formBuilder: FormBuilder,
+    private autenticacaoService: AutenticacaoService,
+    private router: Router,
+    private crypt: CryptoService
+  ) {
+    if (!this.autenticacaoService.isLogado()) {
+      this.router.navigate(['/login']);
+    }
+
+    this.formCadastro = this.formBuilder.group({
+      nome: ["", [Validators.required, Validators.minLength(5)]],
+      login: ["", [Validators.required, Validators.minLength(5)]],
+      senha: ["", [Validators.required, Validators.minLength(5)]],
+    });
+
     this.storage.recuperar("contas").then(c => { if (c) this.list_contas = c });
   }
 
   cryptografarConta(conta: Conta) {
-    conta.login = CryptoJs.AES.encrypt(conta.login, chave).toString();
-    conta.senha = CryptoJs.AES.encrypt(conta.senha, chave).toString();
+    conta.login = this.crypt.encryptAES(conta.login);
+    conta.senha = this.crypt.encryptAES(conta.senha);
   }
 
   descriptografarConta(conta: Conta) {
-    conta.login = CryptoJs.AES.decrypt(conta.login, chave).toString(CryptoJs.enc.Utf8);
-    conta.senha = CryptoJs.AES.decrypt(conta.senha, chave).toString(CryptoJs.enc.Utf8);
+    conta.login = this.crypt.decryptAES(conta.login);
+    conta.senha = this.crypt.decryptAES(conta.senha);
   }
 
   async verDetalhes(id: number) {
@@ -62,10 +83,10 @@ export class HomePage {
     await alert.present();
   }
 
-  async mensagemAdicionar() {
+  async mensagemAdicionar(conta) {
     const alert = await this.alertController.create({
       header: 'Confirme os dados',
-      message: `Nome: ${this.conta.nome}<br/>Login: ${this.conta.login}<br/>Senha: ${this.conta.senha}`,
+      message: `Nome: ${conta.nome}<br/>Login: ${conta.login}<br/>Senha: ${conta.senha}`,
       buttons: [
         "Cancelar",
         {
@@ -73,8 +94,8 @@ export class HomePage {
           role: "cadastrar",
           handler: () => {
             this.conta.id = new Date().getTime();
-            this.cryptografarConta(this.conta);
-            this.list_contas.push(this.conta);
+            this.cryptografarConta(conta);
+            this.list_contas.push(conta);
 
             this.conta = {};
 
@@ -88,17 +109,17 @@ export class HomePage {
   }
 
   adicionar() {
-    if (!this.conta.nome || !this.conta.login || !this.conta.senha) {
-      this.mostrarAlerta("Erro", "Você precisa inserir todas as informações");
-
+    if (!this.formCadastro.valid) {
       return;
     }
 
+    const conta = this.formCadastro.value;
+    console.log(conta);
 
-    const isEqualsNome = this.list_contas.find(conta => conta.nome == this.conta.nome);
+    const isEqualsNome = this.list_contas.find(conta => conta.nome == this.formCadastro.value.nome);
 
     if (!isEqualsNome) {
-      this.mensagemAdicionar();
+      this.mensagemAdicionar(this.formCadastro.value);
     } else {
       console.log("Nome igual");
       this.mostrarAlerta("Erro", "Já existe uma conta com esse nome");
@@ -131,6 +152,10 @@ export class HomePage {
     })
 
     await alert.present();
+  }
+
+  deslogar() {
+    this.autenticacaoService.deslogar();
   }
 
 }
