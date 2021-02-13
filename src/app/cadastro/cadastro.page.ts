@@ -20,7 +20,6 @@ export class CadastroPage implements OnInit {
     this.formulario = formBuilder.group({
       nome: ["", [Validators.required, Validators.minLength(5)]],
       senha: ["", [Validators.required, Validators.minLength(5)]],
-
     });
   }
 

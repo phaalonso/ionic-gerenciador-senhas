@@ -41,12 +41,12 @@ export class HomePage {
     }
 
     this.formCadastro = this.formBuilder.group({
-      nome: ["", [Validators.required, Validators.minLength(5)]],
-      login: ["", [Validators.required, Validators.minLength(5)]],
-      senha: ["", [Validators.required, Validators.minLength(5)]],
+      nome: ['', [Validators.required, Validators.minLength(5)]],
+      login: ['', [Validators.required, Validators.minLength(5)]],
+      senha: ['', [Validators.required, Validators.minLength(5)]],
     });
 
-    this.storage.recuperar("contas").then(c => { if (c) this.list_contas = c });
+    this.storage.recuperar('contas').then(c => { if (c) { this.list_contas = c } });
   }
 
   async verDetalhes(id: number) {
@@ -56,24 +56,24 @@ export class HomePage {
     const modal = await this.modalController.create({
       component: DetailPage,
       componentProps: {
-        'conta': {
+        conta: {
           nome: conta.nome,
           login: this.crypt.decryptAES(conta.login),
           senha: this.crypt.decryptAES(conta.senha)
         }
       }
-    })
+    });
 
     return await modal.present();
   }
 
   async mostrarAlerta(header: string, mensagem: string) {
     const alert = await this.alertController.create({
-      cssClass: "alertClass",
-      header: header,
+      cssClass: 'alertClass',
+      header,
       message: mensagem,
-      buttons: ["Ok"]
-    })
+      buttons: ['Ok']
+    });
 
     await alert.present();
   }
@@ -83,10 +83,10 @@ export class HomePage {
       header: 'Confirme os dados',
       message: `Nome: ${conta.nome}<br/>Login: ${conta.login}<br/>Senha: ${conta.senha}`,
       buttons: [
-        "Cancelar",
+        'Cancelar',
         {
-          text: "Cadastrar",
-          role: "cadastrar",
+          text: 'Cadastrar',
+          role: 'cadastrar',
           handler: () => {
             conta.id = new Date().getTime();
             this.crypt.encryptConta(conta);
@@ -95,7 +95,7 @@ export class HomePage {
 
             this.conta = {};
 
-            this.storage.armazenar("contas", this.list_contas);
+            this.storage.armazenar('contas', this.list_contas);
             this.formCadastro.reset();
           }
         }
@@ -118,9 +118,9 @@ export class HomePage {
     if (!isEqualsNome) {
       this.mensagemAdicionar(conta);
     } else {
-      console.log("Nome igual");
-      this.mostrarAlerta("Erro", "Já existe uma conta com esse nome");
-      this.conta.nome = "";
+      console.log('Nome igual');
+      this.mostrarAlerta('Erro', 'Já existe uma conta com esse nome');
+      this.conta.nome = '';
     }
 
   }
@@ -129,24 +129,24 @@ export class HomePage {
     const conta = this.list_contas.find(item => item.id == id);
 
     const alert = await this.alertController.create({
-      header: "Confirme a exclusão",
+      header: 'Confirme a exclusão',
       message: `Você realmente deseja excluir a conta ${conta.nome}?`,
       buttons: [
         {
-          text: "Cancelar",
-          role: "cancelar",
+          text: 'Cancelar',
+          role: 'cancelar',
           handler: () => console.log('Cancelada'),
         }, {
-          text: "Excluir",
-          role: "excluir",
+          text: 'Excluir',
+          role: 'excluir',
           handler: () => {
             this.list_contas = this.list_contas.filter(c => c != conta);
-            this.storage.armazenar("contas", this.list_contas);
+            this.storage.armazenar('contas', this.list_contas);
           }
         }
       ]
 
-    })
+    });
 
     await alert.present();
   }
@@ -158,7 +158,7 @@ export class HomePage {
       nome: conta.nome,
       login: this.crypt.decryptAES(conta.login),
       senha: this.crypt.decryptAES(conta.senha)
-    }
+    };
 
     const modal = await this.modalController.create({
       component: UpdatePage,
